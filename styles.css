@@ -1,14 +1,137 @@
-body { font-family: Inter, Roboto, Arial, sans-serif; margin: 0; padding: 0; background:#fafafa; color:#111 }
-.container { max-width:1200px; margin:18px auto; padding:18px; }
-header h1 { margin:0 0 6px 0 }
-.controls { display:flex; gap:20px; margin:10px 0; }
-.sliders { flex:1; background:#fff; padding:12px; border-radius:8px; box-shadow:0 1px 4px rgba(0,0,0,0.06) }
-.equations { flex:1; background:#fff; padding:12px; border-radius:8px; box-shadow:0 1px 4px rgba(0,0,0,0.06) }
-.sliders label { display:block; margin-bottom:10px; font-size:13px }
-.sliders input[type=range] { width:100% }
-.figure-select { margin-top:8px }
-main { margin-top:18px; }
-.plot-panel { background:#fff; padding:12px; border-radius:8px; box-shadow:0 1px 6px rgba(0,0,0,0.06) }
-.panel table { border-collapse:collapse }
-.panel table th, .panel table td { padding:8px 12px; border:1px solid #eee }
-footer { margin-top:12px; font-size:13px; color:#666 }
+/* Enhanced styles.css */
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  margin: 0;
+  padding: 0;
+  background-color: #f4f6f8;
+  color: #333;
+  line-height: 1.6;
+}
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+header {
+  margin-bottom: 24px;
+}
+
+header h1 {
+  margin: 0 0 8px 0;
+  font-size: 2rem;
+  color: #1a202c;
+}
+
+header p {
+  margin: 0;
+  color: #4a5568;
+}
+
+.layout-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 24px;
+}
+
+@media (min-width: 768px) {
+  .layout-grid {
+    grid-template-columns: 350px 1fr;
+    align-items: start;
+  }
+}
+
+.sidebar {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.card {
+  background: #fff;
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+  border: 1px solid #e2e8f0;
+}
+
+.control-group {
+  margin-bottom: 16px;
+}
+
+.control-group label {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 6px;
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: #2d3748;
+}
+
+.control-group input[type=range] {
+  width: 100%;
+  cursor: pointer;
+}
+
+.select-wrapper {
+  margin-top: 16px;
+}
+
+.select-wrapper select {
+  width: 100%;
+  padding: 8px 12px;
+  border-radius: 6px;
+  border: 1px solid #cbd5e0;
+  background-color: white;
+  font-size: 0.95rem;
+}
+
+.equations-card h3 {
+  margin-top: 0;
+  font-size: 1.1rem;
+  color: #2d3748;
+  margin-bottom: 12px;
+}
+
+.main-content {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.plot-container {
+  background: #fff;
+  border-radius: 12px;
+  padding: 20px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+  border: 1px solid #e2e8f0;
+}
+
+.plot-container h3, .plot-container h4 {
+  margin-top: 0;
+  color: #2d3748;
+}
+
+.mjx-container {
+  overflow-x: auto;
+  overflow-y: hidden;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+th, td {
+  padding: 12px;
+  text-align: left;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+th {
+  font-weight: 600;
+  color: #4a5568;
+  background-color: #f7fafc;
+}

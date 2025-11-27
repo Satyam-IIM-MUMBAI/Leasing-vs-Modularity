@@ -1,5 +1,5 @@
 // utils/model.js
-// Note: small deterministic grid-search replaces SciPy minimize for client-side.
+// Client-side JS model & grid builders for the simulator.
 // Exports: buildFig1Grid(params), buildJointChoiceGrid(params), buildGridResults(params)
 
 function clamp(x, a, b) { return Math.max(a, Math.min(b, x)); }
@@ -24,12 +24,11 @@ CircularEconomyModel.prototype.profit_SI = function() {
   return numerator / denominator;
 };
 
-// simple grid-based numeric optimization for LI
 CircularEconomyModel.prototype._optimize_LI_numerical = function() {
   const dsum = this.d_sum_L;
   const cost = 2 * this.c;
   let best = 0;
-  const steps = 31;
+  const steps = 25;
   for (let i=0;i<steps;i++){
     const Ln = i/(steps-1);
     for (let j=0;j<steps;j++){
@@ -46,10 +45,9 @@ CircularEconomyModel.prototype._optimize_LI_numerical = function() {
 };
 
 CircularEconomyModel.prototype.profit_LI = function() {
-  const cost = 2 * this.c;
   const CLI = (2 - this.d_sum_L) / 8.0;
   if (this.c < CLI) return this._optimize_LI_numerical();
-  const numerator = Math.pow(2 - 2*cost + this.d_sum_L, 2);
+  const numerator = Math.pow(2 - 2*(2*this.c) + this.d_sum_L, 2);
   const denominator = 8 * (2 + 3*this.d_sum_L);
   return numerator / denominator;
 };
@@ -65,10 +63,9 @@ CircularEconomyModel.prototype.profit_SM = function() {
   return Math.max(pi_integral, pi_modular);
 };
 
-// LM: small grid search for Lnn, Lun, Luu subject to Lun+Luu <= Lnn
 CircularEconomyModel.prototype.profit_LM = function() {
-  const steps = 21;
-  let best = 0;
+  const steps = 15;
+  let best = -1e9;
   for (let i=0;i<steps;i++){
     const Lnn = i/(steps-1);
     for (let j=0;j<steps;j++){
@@ -98,33 +95,35 @@ CircularEconomyModel.prototype.profit_LM = function() {
   return Math.max(best, pi_LI);
 };
 
-// Helper: build a grid for fig1 (modular vs integral)
+// --- Helpers to create grids for plots ---
+
 export function buildFig1Grid({ d1, d2, gamma, c, k, resolution }) {
-  // We'll plot region: for many (d1,d2) check which architecture wins for chosen gamma,c
   const N = resolution || 40;
   const xs = new Array(N).fill(0).map((_,i) => 0.05 + (0.95-0.05)*(i/(N-1)));
   const ys = new Array(N).fill(0).map((_,i) => 0.05 + (0.95-0.05)*(i/(N-1)));
-  const Z = Array.from({length:N}, ()=> new Array(N).fill(0));
+
+  // For selling and leasing we compute two separate matrices so frontend can show either
+  const Z_sell = Array.from({length:N}, ()=> new Array(N).fill(null));
+  const Z_leas = Array.from({length:N}, ()=> new Array(N).fill(null));
+
   for (let i=0;i<N;i++){
     for (let j=0;j<N;j++){
       const dd1 = xs[j], dd2 = ys[i];
-      if (dd2 >= dd1) { Z[i][j] = NaN; continue; }
-      const m = new CircularEconomyModel(dd1, dd2, gamma, c, k);
-      // Compare modular vs integral under SELLING (simulate behavior used earlier)
-      const pi_mod = m.profit_SM();
-      const pi_int = m.profit_SI();
-      Z[i][j] = (pi_mod > pi_int + 1e-6) ? 1 : 0;
+      if (dd2 >= dd1) { Z_sell[i][j] = null; Z_leas[i][j] = null; continue; }
+      const m_sell = new CircularEconomyModel(dd1, dd2, gamma, c, k);
+      Z_sell[i][j] = m_sell.profit_SM() > m_sell.profit_SI() + 1e-8 ? 1 : 0;
+      Z_leas[i][j] = m_sell.profit_LM ? (new CircularEconomyModel(dd1, dd2, gamma, c, k).profit_LM() > new CircularEconomyModel(dd1, dd2, gamma, c, k).profit_LI() + 1e-8 ? 1 : 0) : 0;
     }
   }
-  return { Z, xAxis: xs, yAxis: ys, title: "Figure 1: Modular(1) vs Integral(0)", colors: [['white','lightgray']] };
+
+  return { Z: Z_sell, Z_leasing: Z_leas, xAxis: xs, yAxis: ys, title: 'Architecture Choice (selling)' };
 }
 
-// Joint choice grid (Figure 4 style): pick best among SI,LI,SM,LM
 export function buildJointChoiceGrid({ d1, d2, gamma, c, k, resolution }) {
   const N = resolution || 40;
   const c_range = new Array(N).fill(0).map((_,i) => 0.01 + (0.35-0.01)*(i/(N-1)));
   const g_range = new Array(N).fill(0).map((_,i) => 0.5 + (1.5-0.5)*(i/(N-1)));
-  const Z = Array.from({length:N}, ()=> new Array(N).fill(0));
+  const Z = Array.from({length:N}, ()=> new Array(N).fill(null));
   for (let i=0;i<N;i++){
     for (let j=0;j<N;j++){
       const cval = c_range[j], gval = g_range[i];
@@ -134,10 +133,9 @@ export function buildJointChoiceGrid({ d1, d2, gamma, c, k, resolution }) {
       Z[i][j] = bestIdx; // 0..3
     }
   }
-  return { Z, xAxis: c_range, yAxis: g_range, title: "Figure 4: Joint Choice (0=SI,1=LI,2=SM,3=LM)" };
+  return { Z_joint: Z, cAxis: c_range, gAxis: g_range, title: 'Joint Choice Strategy Map' };
 }
 
-// Single point profits (table)
 export function buildGridResults({ d1, d2, gamma, c, k }) {
   const m = new CircularEconomyModel(d1, d2, gamma, c, k);
   const singleProfits = {

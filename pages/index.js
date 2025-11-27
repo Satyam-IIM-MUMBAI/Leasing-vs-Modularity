@@ -224,7 +224,7 @@ export default function Home() {
             <>
               <h3>Fig 3: Business Model Choice</h3>
               <div style={{ marginBottom: 12 }}>
-                <h4>Integral preference (Lease>Sell)</h4>
+                <h4>Integral preference (Lease &gt; Sell)</h4>
                 <Plot data={[{
                   z: gridData.Z_int, x: gridData.cAxis, y: gridData.gAxis, type:'heatmap',
                   zmin:0, zmax:1, zsmooth:false, colorscale:[['0','rgb(221,221,221)'],['1','rgb(136,136,136)']],
@@ -233,7 +233,7 @@ export default function Home() {
               </div>
 
               <div style={{ marginBottom: 12 }}>
-                <h4>Modular preference (Lease>Sell)</h4>
+                <h4>Modular preference (Lease &gt; Sell)</h4>
                 <Plot data={[{
                   z: gridData.Z_mod, x: gridData.cAxis, y: gridData.gAxis, type:'heatmap',
                   zmin:0, zmax:1, zsmooth:false, colorscale:[['0','rgb(221,221,221)'],['1','rgb(136,136,136)']],

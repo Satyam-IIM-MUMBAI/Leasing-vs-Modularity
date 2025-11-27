@@ -1,5 +1,8 @@
 import { useState, useMemo } from 'react';
-import Plot from 'react-plotly.js';
+import dynamic from 'next/dynamic';
+
+// Client-side-only Plot component to avoid server-side Plotly errors
+const Plot = dynamic(() => import('react-plotly.js'), { ssr: false });
 import { buildGridResults, buildFig1Grid, buildJointChoiceGrid } from '../utils/model';
 
 // Quick LaTeX renderer using MathJax CDN

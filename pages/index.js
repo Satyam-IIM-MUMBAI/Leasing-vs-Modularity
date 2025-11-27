@@ -3,11 +3,14 @@ import { useState, useMemo } from 'react';
 import dynamic from 'next/dynamic';
 import Head from 'next/head';
 import {
-  buildFig1Grid, buildFig2Grid, buildFig3Grid,
-  buildFig4Grid, buildFig5Grid, buildFig6Data,
-  buildGridResults
+  buildGridResults,
+  buildFig1Grid,
+  buildFig2Grid,
+  buildFig3Grid,
+  buildFig4Grid,
+  buildFig5Grid,
+  buildFig6Data
 } from '../utils/model';
-
 // Client-only Plotly using the lightweight bundle + factory
 const Plot = dynamic(
   async () => {
